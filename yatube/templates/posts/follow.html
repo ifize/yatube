@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block title %}   
+  Подиски
+{% endblock %}
+{% block content %}
+  {% include 'posts/includes/switcher.html' %}
+    {% for post in page_obj %} 
+      {% include 'includes/card.html' with show_author=True show_group=True %}
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+  {% include 'posts/includes/paginator.html' %}  
+{% endblock %} 

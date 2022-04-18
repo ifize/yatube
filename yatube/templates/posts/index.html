@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block title %}   
+  Последние обновления на сайте
+{% endblock %}
+{% block content %}
+  {% include 'posts/includes/switcher.html' %}
+  {% load cache %}
+  {% cache 20 index_page %}
+    {% for post in page_obj %} 
+      {% include 'includes/card.html' with show_author=True show_group=True %}
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+  {% endcache %}
+  {% include 'posts/includes/paginator.html' %}  
+{% endblock %} 

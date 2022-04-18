@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block title %}   
+  Записи сообщества {{ group }}
+{% endblock %}
+
+{% block content %}
+  <h1>{{ group }}</h1>
+  <p>
+    {{ group.description }}
+  </p>
+  {% for post in page_obj %}
+    {% include 'includes/card.html' with show_author=True %}
+    {% if not forloop.last %}<hr>{% endif %}
+  {% endfor %}
+  {% include 'posts/includes/paginator.html' %}
+{% endblock %}
