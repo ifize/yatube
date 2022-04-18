@@ -167,4 +167,3 @@ class PostCreateFormTests(TestCase):
                 text='Текстус',
             ).exists()
         )
-
