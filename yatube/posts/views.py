@@ -38,12 +38,11 @@ def profile(request, username):
     posts = Post.objects.filter(author=user)
     self_profile = True
     following = None
-    if request.user != user:
+    if (request.user.is_authenticated) & (request.user != user):
         self_profile = False
-        if request.user.is_authenticated:
-            auth = User.objects.filter(following__user=request.user)
-            if user in auth:
-                following = True
+        auth = User.objects.filter(following__user=request.user)
+        if user in auth:
+            following = True
     context = {
         'posts': posts,
         'username': user,
@@ -73,20 +72,15 @@ def post_detail(request, post_id):
 def post_create(request):
     template = 'posts/create_post.html'
     user = request.user
-    if request.method == 'POST':
-        form = PostForm(
-            request.POST or None,
-            files=request.FILES or None,
-        )
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = user
-            post.save()
-            return redirect('posts:profile', user.username)
-
-        return render(request, template, {'form': form, 'is_edit': False})
-
-    form = PostForm()
+    form = PostForm(
+        request.POST or None,
+        files=request.FILES or None,
+    )
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.author = user
+        post.save()
+        return redirect('posts:profile', user.username)
     return render(request, template, {'form': form, 'is_edit': False})
 
 
