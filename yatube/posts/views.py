@@ -16,7 +16,7 @@ def page_maker(request, posts):
 
 
 def index(request):
-    posts = Post.objects.all().order_by('-pub_date')
+    posts = Post.objects.all()
     context = {
         'page_obj': page_maker(request, posts),
     }
@@ -25,7 +25,7 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = Post.objects.all().filter(group=group).order_by('-pub_date')
+    posts = Post.objects.filter(group=group)
     context = {
         'group': group,
         'page_obj': page_maker(request, posts),
@@ -35,20 +35,15 @@ def group_posts(request, slug):
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    posts = Post.objects.all().filter(author=user).order_by('-pub_date')
+    posts = Post.objects.filter(author=user)
+    self_profile = True
+    following = None
     if request.user != user:
         self_profile = False
         if request.user.is_authenticated:
             auth = User.objects.filter(following__user=request.user)
             if user in auth:
                 following = True
-            else:
-                following = False
-        else:
-            following = False
-    else:
-        self_profile = True
-        following = None
     context = {
         'posts': posts,
         'username': user,
@@ -64,7 +59,7 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post.objects.select_related('author'), pk=post_id)
     posts_author = post.author.posts.all()
     posts_counter = posts_author.count()
-    comments = Comment.objects.all().order_by('-created')
+    comments = Comment.objects.filter(post_id=post_id).order_by('-created')
     context = {
         'post': post,
         'posts_counter': posts_counter,
@@ -79,16 +74,13 @@ def post_create(request):
     template = 'posts/create_post.html'
     user = request.user
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(
+            request.POST or None,
+            files=request.FILES or None,
+        )
         if form.is_valid():
-            text = form.cleaned_data['text']
-            group = form.cleaned_data['group']
-            author = user
-            post = Post.objects.create(
-                text=text,
-                group=group,
-                author=author,
-            )
+            post = form.save(commit=False)
+            post.author = user
             post.save()
             return redirect('posts:profile', user.username)
 
@@ -143,14 +135,10 @@ def follow_index(request):
 @login_required
 def profile_follow(request, username):
     user = get_object_or_404(User, username=username)
-    if (
-        request.user != user
-    ) & (
-            Follow.objects.filter(user=request.user, author=user).count() < 1
-    ):
+    if request.user != user:
         Follow.objects.create(
-            user=request.user,
-            author=user
+            author=user,
+            user=request.user
         )
     return redirect('posts:profile', username=username)
 

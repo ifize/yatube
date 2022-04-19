@@ -1,16 +1,14 @@
 import shutil
 import tempfile
 
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.conf import settings
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from ..models import Post, Group, Comment
+from ..models import Post, Group, Comment, User
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
-User = get_user_model()
 
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -73,8 +71,9 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
-                text='Текстус',
+                text=form_data['text'],
                 group=self.group.pk,
+                author=self.user
             ).exists()
         )
         self.assertEqual(Post.objects.count(), posts_count + 1)

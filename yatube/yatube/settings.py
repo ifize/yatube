@@ -23,7 +23,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 SECRET_KEY = 'lso@l#sb8ke7pk8j)*4cm_-q)_@d=j&=u6^p0+s30f08+ws^f$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',

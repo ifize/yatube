@@ -4,15 +4,13 @@ import time
 
 from django import forms
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from ..models import Group, Post
+from ..models import Group, Post, User
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
-User = get_user_model()
 
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -191,14 +189,11 @@ class PaginatorViewsTest(TestCase):
             slug='test-slug',
             description='Тестовое описание',
         )
-        post_counter = 1
-        for post_counter in range(13):
-            Post.objects.create(
-                author=cls.user,
-                text='Текст',
-                group=Group.objects.get(title='Тестовая группа')
-            )
-            post_counter += 1
+        Post.objects.bulk_create(
+            [Post(author=cls.user,
+                  group=Group.objects.get(title='Тестовая группа'),
+                  text='Текст',) for _ in range(13)]
+        )
 
     def setUp(self):
         self.guest_client = Client()
