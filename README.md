@@ -1,3 +1,3 @@
-# hw05_final
-
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+# Yatube
+### Социальная сеть для блоггеров на базе Django Framework
+Социальная сеть, которая позволяет пользователям просматривать и создавать записи, вступать в группы, оставлять комментарии и подписываться на интересующих авторов. Также, реализована возможность регистрации и авторизации.   
